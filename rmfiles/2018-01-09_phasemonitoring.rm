@@ -1,0 +1,17 @@
+phasemonitor.py,C:/Google Drive/code/instrument control/
+Property,Value
+Experiment Name,Combiner phase difference monitoring
+Experiment Name Addon,18 V per cm
+Number of Traces per Loop,1
+Digitizer Channel Range [V],4
+Digitizer Sampling Rate [S/s],100000
+Number of Digitizer Samples,100000
+Digitizer Address for Power Combiners,A
+Digitizer Channel for Power Combiner I,2
+Digitizer Channel for Power Combiner R,1
+Quenches,C:/Google Drive/code/instrument control/quenchfiles/default.quench
+RF Generator Frequency Offset [Hz],625
+RF Electric Field Peak Amplitude [V/cm],18
+RF Frequency Range,medium
+Binary Traces,False
+Notes,Phase monitoring with 18 V/cm.  Waveguide calibration is not perfect.

@@ -1,0 +1,20 @@
+waveguidecalibration.py,C:/Google Drive/code/instrument control/
+Property,Value
+Experiment Name,Waveguide Calibration
+Experiment Name Addon,TESTING DELETE LATER
+Number of Repeats,1
+Number of Averages,2
+Waveguide Power (Start) [dBm],-25.0
+Waveguide Power (Stop) [dBm],0.0
+Waveguide Frequency (Start) [MHz],908.0
+Waveguide Frequency (Stop) [MHz],912.0
+Number of Power Scan Steps,2
+Number of Frequency Scan Steps,2
+Digitizer Address,B
+Digitizer Channel Range [V],16
+Digitizer Sampling Rate [S/s],100000
+Number of Digitizer Samples,100000
+Quenches,C:/Google Drive/code/instrument control/quenchfiles/wgcalibration.quench
+Waveguide to Scan,A
+Binary Traces,False
+Digitizer Channel for Detector,1

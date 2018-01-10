@@ -1,0 +1,20 @@
+waveguidecalibration.py,C:/Google Drive/code/instrument control/
+Property,Value
+Experiment Name,Waveguide calibration
+Experiment Name Addon,BOTH waveguides 4MHz Scan 0config-PD_OFF
+Number of Repeats,1
+Number of Averages,2
+Waveguide Power (Start) [dBm],-25
+Waveguide Power (Stop) [dBm],0
+Waveguide Frequency (Start) [MHz],907.8
+Waveguide Frequency (Stop) [MHz],912.2
+Number of Power Scan Steps,30
+Number of Frequency Scan Steps,45
+Digitizer Address,B
+Digitizer Channel Range [V],4
+Digitizer Sampling Rate [S/s],100000
+Number of Digitizer Samples,50000
+Digitizer Channel for Detector,1
+Quenches,C:/Google Drive/code/instrument control/quenchfiles/wgcalibration.quench
+Waveguide to Scan,BOTH
+Binary Traces,False

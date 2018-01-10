@@ -1,0 +1,7 @@
+Quench Name,Attenuation Voltage,Cavity,Open,Status
+pre-quench_910,None,pre-910,True,off
+pre-quench_1088,None,pre-1088,True,off
+pre-quench_1147,None,pre-1147,True,off
+post-quench_910,None,post-910,True,off
+post-quench_1088,None,post-1088,True,off
+post-quench_1147,None,post-1147,True,off

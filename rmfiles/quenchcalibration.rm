@@ -1,0 +1,17 @@
+quenchcalibration.py,C:/Google Drive/code/instrument control/
+Property,Value
+Experiment Name,Quench Cavity Calibration
+Experiment Name Addon,TESTING DELETE LATER
+Number of Repeats,1
+Number of Averages,8
+RF Attenuator Voltage (Start) [V],0.0
+RF Attenuator Voltage (Stop) [V],8.0
+Number of Scan Steps,2
+Digitizer Address,B
+Digitizer Channel Range [V],16
+Digitizer Sampling Rate [S/s],100000
+Number of Digitizer Samples,100000
+Quenches,C:/Google Drive/code/instrument control/quenchfiles/default.quench
+Quench Cavity to Scan,pre-quench_910
+Binary Traces,False
+Digitizer Channel for Detector,1

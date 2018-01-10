@@ -1,0 +1,17 @@
+phasemonitor.py,C:/Google Drive/code/instrument control/
+Property,Value
+Experiment Name,TESTING
+Experiment Name Addon,DELETE LATER
+Number of Traces per Loop,8
+Digitizer Channel Range [V],4
+Digitizer Sampling Rate [S/s],100000
+Number of Digitizer Samples,100000
+Digitizer Address for Power Combiners,A
+Digitizer Channel for Power Combiner I,1
+Digitizer Channel for Power Combiner R,2
+Quenches,C:/Google Drive/code/instrument control/quenchfiles/filename.quench
+RF Generator Frequency Offset [Hz],625
+RF Electric Field Peak Amplitude [V/cm],14
+RF Frequency Range,medium
+Binary Traces,False
+Notes,Testing new FOSOFtware

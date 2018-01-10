@@ -1,0 +1,29 @@
+fosof_acquisition.py,C:/Google Drive/code/instrument control/
+Property,Value
+Experiment Name,FOSOF Acquisition
+Experiment Name Addon,"pi configuration, 18 V per cm, 4 MHz wide"
+Number of Repeats,6
+Number of Averages,4
+Number of Traces Between Switching Configurations,4
+Waveguide Electric Field [V/cm],18
+Offset Frequency [Hz],625
+Frequency Scan Range,medium
+Number of Frequency Steps,41
+B_x Min [Gauss],0.0
+B_x Max [Gauss],0.0
+Number of B_x Steps,1
+B_y Min [Gauss],0.0
+B_y Max [Gauss],0.0
+Number of B_y Steps,1
+Pre-Quench 910 On/Off,False
+Pre-Quench 910 On Number of Digitizer Samples,0
+Digitizer Address for Detector,B
+Digitizer Channel for Detector,1
+Digitizer Channel Range [V],4
+Digitizer Sampling Rate [S/s],100000
+Number of Digitizer Samples,125000
+Power Combiner on Detector Digitizer,I
+Quenches,C:/Google Drive/code/instrument control/quenchfiles/fosof.quench
+Binary Traces,True
+Configuration,pi
+Notes,"First data set in quite some time. Proton deflector installed but currently off. The rotation stage has been equipped with a gear system. Whil installing this system, the box was shifted slightly and so the ALIGNMENT MAY BE OFF."
