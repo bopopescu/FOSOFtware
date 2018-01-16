@@ -137,7 +137,7 @@ class Generator(object):
             # Open the calibration files as pandas dataframes. Hopefully one day
             # soon, we'll update this system to just have one file with many
             # frequencies and powers.
-            if self.calibration_files[0].find("Waveguide_A"):
+            if self.calibration_files[0].find("Waveguide_A") > -1:
                 self.calib_A = pd.read_csv(_CALIBRATION_FOLDER_ + \
                                         self.scan_range + "/" + \
                                         self.calibration_files[0], sep = "\t")
@@ -151,7 +151,7 @@ class Generator(object):
                 self.calib_B = pd.read_csv(_CALIBRATION_FOLDER_ + \
                                         self.scan_range + "/" + \
                                         self.calibration_files[0], sep = "\t")
-    
+
             self.calib_A = self.calib_A.set_index("Frequency [MHz]")
             self.calib_B = self.calib_B.set_index("Frequency [MHz]")
 
