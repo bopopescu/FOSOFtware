@@ -26,17 +26,17 @@ class Manager(object):
         # queues are for the terminal windows to send and the main thread to
         # receive. The queueout queues are for the main thread to send and the
         # windows to receive.
-        self.terminal_out_queuein = Queue()
-        self.terminal_err_queuein = Queue()
-        self.terminal_in_queuein = Queue()
-        self.terminal_out_queueout = Queue()
-        self.terminal_err_queueout = Queue()
-        self.terminal_in_queueout = Queue()
+        self.terminal_out_queuein = mp.Queue()
+        self.terminal_err_queuein = mp.Queue()
+        self.terminal_in_queuein = mp.Queue()
+        self.terminal_out_queueout = mp.Queue()
+        self.terminal_err_queueout = mp.Queue()
+        self.terminal_in_queueout = mp.Queue()
 
         # For communication with the runscheduler window. The run scheduler will
         # be asked for the next file/files in line, and will send them.
-        self.rs_queuein = Queue()
-        self.rs_queueout = Queue()
+        self.rs_queuein = mp.Queue()
+        self.rs_queueout = mp.Queue()
 
         # Queues for communication with the current acquisition. The mp Queue is
         # very similar to the regular queue, but it can be used with a
@@ -75,17 +75,17 @@ class Manager(object):
         '''
 
         # Start the user input/output windows.
-        self.t = th.Thread(target=ioput.run_iotk, \
-                           args=(self.terminal_in_queuein, \
-                                 self.terminal_in_queueout, \
-                                 self.terminal_out_queuein, \
-                                 self.terminal_out_queueout, \
-                                 self.terminal_err_queuein, \
-                                 self.terminal_err_queueout, \
-                                 self.rs_queuein,
-                                 self.rs_queueout))
-        self.t.daemon = True # Thread will be terminated if main process quits
-        self.t.start()
+        self.pr = mp.Process(target=ioput.run_iotk, \
+                             args=(self.terminal_in_queuein, \
+                                   self.terminal_in_queueout, \
+                                   self.terminal_out_queuein, \
+                                   self.terminal_out_queueout, \
+                                   self.terminal_err_queuein, \
+                                   self.terminal_err_queueout, \
+                                   self.rs_queuein,
+                                   self.rs_queueout))
+        self.pr.daemon = True # Thread will be terminated if main process quits
+        self.pr.start()
 
         self.run_result = None # Logs the success/failure of the last run
 
@@ -314,7 +314,7 @@ class Manager(object):
                 self.state = 'DONE'
 
         # Safely join the thread.
-        self.t.join()
+        self.pr.join()
 
     def clear_queue(self, q):
         ''' Convenience. Clears a queue in a thread-safe manner.'''
@@ -794,7 +794,7 @@ class Manager(object):
 
             # If the user input/output processes have closed/terminated, end the
             # acquisition as well.
-            if not self.t.is_alive():
+            if not self.pr.is_alive():
                 if self.p:
                     if self.p.is_alive():
                         self.end_acq(self.acq_out, self.acq_in, self.acq_err, \

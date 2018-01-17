@@ -91,6 +91,7 @@ def make_binary_folder(main_name, prefix, addon):
 
     absolute = _BINARY_PATH_ + prefix + " - " + main_name + " - " + addon +  "/"
     os.mkdir(absolute)
+    os.mkdir(absolute + "run parameters/")
 
     return absolute
 

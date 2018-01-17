@@ -171,7 +171,7 @@ class Digitizer:
         if clocked:
             self.device.write("CONFigure:CHANnel:FILTer (@1,2), LP_200_KHZ")
         
-            # Set the 1st digitizer to external reference oscillator
+            # Set the digitizer to external reference oscillator
             self.device.write("CONF:ROSC EXT")
             time.sleep(1)
             self.device.write("CONF:ROSC?")

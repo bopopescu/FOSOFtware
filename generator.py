@@ -85,34 +85,34 @@ class Generator(object):
         # The waveguide calibration files should be generated previously and
         # placed in the location listed in the global variables. The scan
         # ranges are listed as small, medium, large and extra large.
-        if not self.calib_mode:
-            ranges = info_file["Scan Ranges"].values[0].split(";")
-            if isinstance(scan_range, str):
-                if scan_range in ['small', 'medium', 'large', 'extralarge']:
-                    self.scan_range = scan_range
-                    if scan_range == 'small':
-                        self.f_min_max = [ranges[0], ranges[1]]
-                    if scan_range == 'medium':
-                        self.f_min_max = [ranges[2], ranges[3]]
-                    if scan_range == 'large':
-                        self.f_min_max = [ranges[4], ranges[5]]
-                    if scan_range == 'extralarge':
-                        self.f_min_max = [ranges[6], ranges[7]]
-                    print("Scan range set to " + self.scan_range)
-                else:
-                    print("Scan range must be \'small\', \'medium\', \'large\' " + \
-                        "or \'extralarge\'. Cannot open generator.")
-                    return
+        ranges = info_file["Scan Ranges"].values[0].split(";")
+        if isinstance(scan_range, str):
+            if scan_range in ['small', 'medium', 'large', 'extralarge']:
+                self.scan_range = scan_range
+                if scan_range == 'small':
+                    self.f_min_max = [ranges[0], ranges[1]]
+                if scan_range == 'medium':
+                    self.f_min_max = [ranges[2], ranges[3]]
+                if scan_range == 'large':
+                    self.f_min_max = [ranges[4], ranges[5]]
+                if scan_range == 'extralarge':
+                    self.f_min_max = [ranges[6], ranges[7]]
+                print("Scan range set to " + self.scan_range)
             else:
                 print("Scan range must be \'small\', \'medium\', \'large\' " + \
                     "or \'extralarge\'. Cannot open generator.")
                 return
+        else:
+            print("Scan range must be \'small\', \'medium\', \'large\' " + \
+                "or \'extralarge\'. Cannot open generator.")
+            return
 
-            # Finding the list of electric field amplitudes for which there is
-            # a calibration file in the scan range folder
-            e_field_values = []
+        # Finding the list of electric field amplitudes for which there is
+        # a calibration file in the scan range folder
+        e_field_values = []
+        if os.path.exists(_CALIBRATION_FOLDER_ + self.scan_range):
             calibration_files = os.listdir(_CALIBRATION_FOLDER_ + \
-                                        self.scan_range + "/")
+                                           self.scan_range + "/")
             for flname in calibration_files:
                 if flname.find('E=') > -1:
                     e_field_values.append(int(flname[flname.find('E=')+2: \
@@ -154,11 +154,17 @@ class Generator(object):
 
             self.calib_A = self.calib_A.set_index("Frequency [MHz]")
             self.calib_B = self.calib_B.set_index("Frequency [MHz]")
+        elif calib_mode:
+            self.calib_available = False
+        else:
+            raise qol.Travisty("The folder " + _CALIBRATION_FOLDER_ + \
+                               scan_range + " does not exist. Cannot open" + \
+                               " calibration files.")
 
-            # Create a list of frequencies for this data set
-            self.frequencies = np.linspace(round(float(self.f_min_max[0]),1), \
-                                        round(float(self.f_min_max[1]),1), \
-                                        num = 41)
+        # Create a list of frequencies for this data set
+        self.frequencies = np.linspace(round(float(self.f_min_max[0]),1), \
+                                    round(float(self.f_min_max[1]),1), \
+                                    num = 41)
 
         # Open the generator
         self.generator = serial.Serial("COM"+str(self.com_port), timeout = 5,
@@ -182,7 +188,7 @@ class Generator(object):
         self.generator.write("SOURCE B; MOD:OFF; AM:OFF \n")
 
         # Turn on the generator and set the frequency to 910.0 MHz
-        self.set_rf_frequency(20, 'N')
+        self.set_rf_frequency(21, 'N')
         print("RF Generator on and set to 910.0 MHz.")
 
         # Set up the Keithley logger to read the power detectors for the
@@ -284,7 +290,8 @@ class Generator(object):
 
         return self._offset_freq
 
-    def set_rf_frequency(self, freq_or_ind, offset_channel):
+    def set_rf_frequency(self, freq_or_ind, offset_channel,
+                         change_power = False):
         ''' A function to change the frequency on the generator and change the
         power accordingly if the generator is not in calibration mode. This
         function applies the blind, jitters, and offset frequency.
@@ -330,7 +337,7 @@ class Generator(object):
                 return
 
         # Change the power as well if not in calibration mode.
-        if not self.calib_mode:
+        if not self.calib_mode or (change_power and self.calib_available):
             a_power = str(round(self.calib_A.ix[round(a_freq,1)].values[0],1))
             b_power = str(round(self.calib_B.ix[round(b_freq,1)].values[0],1))
 
@@ -343,6 +350,8 @@ class Generator(object):
                                      " DBM; CFRQ:VALUE " + \
                                      str(round(b_freq,6)) + " MHz \n")
         else:
+            if change_power:
+                print("No calibration file available. Power not changed.")
             if self.a_on:
                 self.generator.write("SOURCE A; CFRQ:VALUE " + \
                                      str(round(a_freq,6)) + \

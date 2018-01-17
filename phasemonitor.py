@@ -123,8 +123,10 @@ class PhaseMonitor(Acquisition):
         self.rf_scan_range = self.run_dictionary.ix['RF Frequency Range'].Value
         self.gen = generator.Generator(offset_freq = self.offset_freq, \
                                        e_field = self.rf_e_field, \
-                                       scan_range = self.rf_scan_range)
-        self.gen.set_rf_frequency(21, offset_channel = 'A')
+                                       scan_range = self.rf_scan_range,
+                                       calib = True)
+        self.gen.set_rf_frequency(910.0, offset_channel = 'A',
+                                  change_power = True)
 
         self.max_avg = int(self.run_dictionary \
                                .ix['Number of Traces per Loop'].Value)
@@ -263,8 +265,10 @@ class PhaseMonitor(Acquisition):
 
         self.gen = generator.Generator(offset_freq = self.offset_freq, \
                                        e_field = self.rf_e_field, \
-                                       scan_range = self.rf_scan_range)
-        self.gen.set_rf_frequency(21, offset_channel = 'A')
+                                       scan_range = self.rf_scan_range,
+                                       calib = True)
+        self.gen.set_rf_frequency(910.0, offset_channel = 'A',
+                                  change_power = True)
 
         self.fc = faradaycupclass.FaradayCup()
 

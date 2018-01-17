@@ -31,8 +31,8 @@ class UserInput(Toplevel):
 
     def __init__(self, queue_out, queue_in, master=None):
         Toplevel.__init__(self, master)
-        assert isinstance(queue_out, Queue)
-        assert isinstance(queue_in, Queue)
+        assert isinstance(queue_out, mp.queues.Queue)
+        assert isinstance(queue_in, mp.queues.Queue)
         self.title("FOSOFtware: User Input")
         self.running = True
         self.queue_out = queue_out # Will be the queue to send data
@@ -198,8 +198,8 @@ class OutputMonitor(Toplevel):
 
     def __init__(self, queue_out, queue_in, master=None):
         Toplevel.__init__(self, master)
-        assert isinstance(queue_out, Queue)
-        assert isinstance(queue_in, Queue)
+        assert isinstance(queue_out, mp.queues.Queue)
+        assert isinstance(queue_in, mp.queues.Queue)
         self.running = True
         self.queue_out = queue_out # Queue to send data
         self.queue_in = queue_in # Queue to receive data
@@ -290,8 +290,8 @@ class RunScheduler(Frame):
     def __init__(self, queue_out, queue_in, master = None):
         Frame.__init__(self, master)
         self.master = master
-        assert isinstance(queue_out, Queue) # Send
-        assert isinstance(queue_in, Queue) # Receive
+        assert isinstance(queue_out, mp.queues.Queue) # Send
+        assert isinstance(queue_in, mp.queues.Queue) # Receive
         self.queue_out = queue_out
         self.queue_in = queue_in
         self.schedule_list = pd.DataFrame() # Scheduled acquisitions
