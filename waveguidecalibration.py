@@ -231,7 +231,7 @@ class WaveguideCalibration(Acquisition):
 
             V = self.digi.ini_read(channel = self.digi_channel, \
                                    read_type = 'FLOAT', \
-                                   return_bin = False)
+                                   ret_bin = False)
             V = V[0]
 
             dc_on_avg = np.mean(V)
@@ -250,7 +250,7 @@ class WaveguideCalibration(Acquisition):
 
             V = self.digi.ini_read(channel = self.digi_channel, \
                                    read_type = 'FLOAT', \
-                                   return_bin = False)
+                                   ret_bin = False)
             V = V[0]
 
             dc_off_avg = np.mean(V)

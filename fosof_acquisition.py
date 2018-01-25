@@ -411,7 +411,7 @@ class FOSOFAcquisition(Acquisition):
                 if self.ab != ab:
                     self.ab = ab
                     self.gen.set_rf_frequency(gen_f_ind, self.ab)
-    
+
                 while self.switch_iterator < self.traces_btwn_switch:
 
                     self.progress = 'Repeat ' + str(self.rep + 1) + '\n' + \
@@ -443,8 +443,27 @@ class FOSOFAcquisition(Acquisition):
 
                     fc_currents = np.array(self.fcup.get_current("all"))
 
-                    # Save the traces from the last acquisition
+                    # Split data from digitizer and save each channel to a
+                    # different binary file
                     if self.num_complete > 0:
+                        self.V1 = np.array(list(self.V1)) \
+                                    .reshape((self.Vnumsamps,4))
+
+                        n = self.digi_det + 1
+                        self.V_det = self.V1[:,(n-1)*2:n*2].flatten()
+
+                        n = self.digi_c1 + 1
+                        self.V1_c1 = self.V1[:,(n-1)*2:n*2].flatten()
+
+                        self.V2 = np.array(list(self.V2)) \
+                                    .reshape((self.Vnumsamps,4))
+
+                        n = self.digi_c1 + 1
+                        self.V2_c1 = self.V2[:,(n-1)*2:n*2].flatten()
+
+                        n = self.digi_c2 + 1
+                        self.V2_c2 = self.V2[:,(n-1)*2:n*2].flatten()
+
                         self.save_traces(self.filenames)
 
                     # Generate filenames from the current acquisition
@@ -504,24 +523,16 @@ class FOSOFAcquisition(Acquisition):
                     else: print("Not sleeping. t_dif is "+str(t_dif))
 
                     t_s = time.time()
-                    V1 = self.digi1.read()
+                    self.V1 = self.digi1.read(ret_split = False)[0]
                     t_f = time.time()
                     print("Time to read from digitizer 1: " + str(t_f - t_s))
-                    t_s = time.time()
-                    self.V_det = V1[self.digi_det]
-                    self.V1_c1 = V1[self.digi_c1]
-                    t_f = time.time()
-                    print("Time to separate channels 1: " + str(t_f - t_s))
 
                     t_s = time.time()
-                    V2 = self.digi2.read()
+                    self.V2 = self.digi2.read(ret_split = False)[0]
                     t_f = time.time()
-                    print("Time to read from digitizer 1: " + str(t_f - t_s))
-                    t_s = time.time()
-                    self.V2_c1 = V2[self.digi_c1]
-                    self.V2_c2 = V2[self.digi_c2]
-                    t_f = time.time()
-                    print("Time to separate channels 2: " + str(t_f - t_s))
+                    print("Time to read from digitizer 2: " + str(t_f - t_s))
+
+                    self.Vnumsamps = self.digi1.get_numsamples()
 
                     self.switch_iterator += 1
                     self.num_complete += 1
@@ -576,6 +587,23 @@ class FOSOFAcquisition(Acquisition):
         # Check if all repeats have been completed
         # If so, end the acquisition and notify the manager
         if self.rep == self.max_rep:
+            self.V1 = np.array(list(self.V1)) \
+                        .reshape((self.Vnumsamps,4))
+
+            n = self.digi_det + 1
+            self.V_det = self.V1[:,(n-1)*2:n*2].flatten()
+
+            n = self.digi_c1 + 1
+            self.V1_c1 = self.V1[:,(n-1)*2:n*2].flatten()
+
+            self.V2 = np.array(list(self.V2)) \
+                        .reshape((self.Vnumsamps,4))
+
+            n = self.digi_c1 + 1
+            self.V2_c1 = self.V2[:,(n-1)*2:n*2].flatten()
+
+            n = self.digi_c2 + 1
+            self.V2_c2 = self.V2[:,(n-1)*2:n*2].flatten()
             self.save_traces(self.filenames)
             self.progress = 'Finished'
             self.end_time = time.time()

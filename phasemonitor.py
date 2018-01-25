@@ -114,13 +114,15 @@ class PhaseMonitor(Acquisition):
 
         self.progress = 'Opening generator'
 
-        self.offset_freq = float(self.run_dictionary.ix['RF Generator ' + \
-                                                        'Frequency Offset ' + \
-                                                        '[Hz]'].Value)
+        self.offset_freq = int(self.run_dictionary.ix['RF Generator ' + \
+                                                      'Frequency Offset ' + \
+                                                      '[Hz]'].Value)
         self.rf_e_field = int(self.run_dictionary.ix['RF Electric Field ' + \
                                                      'Peak Amplitude ' + \
                                                      '[V/cm]'].Value)
         self.rf_scan_range = self.run_dictionary.ix['RF Frequency Range'].Value
+        print("OFFSET FREQUENCY")
+        print(self.offset_freq)
         self.gen = generator.Generator(offset_freq = self.offset_freq, \
                                        e_field = self.rf_e_field, \
                                        scan_range = self.rf_scan_range,

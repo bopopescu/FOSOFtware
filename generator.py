@@ -62,14 +62,14 @@ class Generator(object):
         # Does not set the offset frequency if the generator is in calibration
         # mode.
         if isinstance(offset_freq, int):
-            if not self.calib_mode:
-                self._offset_freq = float(offset_freq) / 10**6
-            else:
-                self._offset_freq = 0.0
+            self._offset_freq = float(offset_freq) / float(10**6)
         else:
             print("Offset frequency specified is not an int. Setting to " + \
                   "the default of 625 Hz.")
-            self._offset_freq = 625. / 10**6 # [MHz]
+            self._offset_freq = 625. / float(10**6) # [MHz]
+
+        print("OFFSET FREQUENCY FROM GENERATOR")
+        print(self._offset_freq)
 
         # Both the blind and the jitters are applied on top of the set RF
         # frequency. Both have a magnitude of up to 100 kHz. The blind is stored
@@ -110,56 +110,49 @@ class Generator(object):
         # Finding the list of electric field amplitudes for which there is
         # a calibration file in the scan range folder
         e_field_values = []
-        if os.path.exists(_CALIBRATION_FOLDER_ + self.scan_range):
-            calibration_files = os.listdir(_CALIBRATION_FOLDER_ + \
-                                           self.scan_range + "/")
-            for flname in calibration_files:
-                if flname.find('E=') > -1:
-                    e_field_values.append(int(flname[flname.find('E=')+2: \
-                                                    flname.find('.txt')]))
+        calibration_files = os.listdir(_CALIBRATION_FOLDER_ + \
+                                    self.scan_range + "/")
+        for flname in calibration_files:
+            if flname.find('E=') > -1:
+                e_field_values.append(int(flname[flname.find('E=')+2: \
+                                                flname.find('.txt')]))
 
-            # Checking the value given for electric field. Must be an integer and
-            # must have a calibration file for the scan range specified.
-            if isinstance(e_field, int):
-                if e_field in e_field_values:
-                    self.e_field = e_field
-                    print("Electric field set to " + str(e_field) + "V/cm.")
-                    self.calibration_files = [fl for fl in calibration_files \
-                                            if fl.find(str(e_field)) > -1]
-                else:
-                    print("Cannot find a calibration file for the electric " + \
-                        "field given.")
-                    return
+        # Checking the value given for electric field. Must be an integer and
+        # must have a calibration file for the scan range specified.
+        if isinstance(e_field, int):
+            if e_field in e_field_values:
+                self.e_field = e_field
+                print("Electric field set to " + str(e_field) + "V/cm.")
+                self.calibration_files = [fl for fl in calibration_files \
+                                        if fl.find(str(e_field)) > -1]
             else:
-                print("Invalid electric field given. Must be an integer")
+                print("Cannot find a calibration file for the electric " + \
+                    "field given.")
                 return
-
-            # Open the calibration files as pandas dataframes. Hopefully one day
-            # soon, we'll update this system to just have one file with many
-            # frequencies and powers.
-            if self.calibration_files[0].find("Waveguide_A") > -1:
-                self.calib_A = pd.read_csv(_CALIBRATION_FOLDER_ + \
-                                        self.scan_range + "/" + \
-                                        self.calibration_files[0], sep = "\t")
-                self.calib_B = pd.read_csv(_CALIBRATION_FOLDER_ + \
-                                        self.scan_range + "/" + \
-                                        self.calibration_files[1], sep = "\t")
-            else:
-                self.calib_A = pd.read_csv(_CALIBRATION_FOLDER_ + \
-                                        self.scan_range + "/" + \
-                                        self.calibration_files[1], sep = "\t")
-                self.calib_B = pd.read_csv(_CALIBRATION_FOLDER_ + \
-                                        self.scan_range + "/" + \
-                                        self.calibration_files[0], sep = "\t")
-
-            self.calib_A = self.calib_A.set_index("Frequency [MHz]")
-            self.calib_B = self.calib_B.set_index("Frequency [MHz]")
-        elif calib_mode:
-            self.calib_available = False
         else:
-            raise qol.Travisty("The folder " + _CALIBRATION_FOLDER_ + \
-                               scan_range + " does not exist. Cannot open" + \
-                               " calibration files.")
+            print("Invalid electric field given. Must be an integer")
+            return
+
+        # Open the calibration files as pandas dataframes. Hopefully one day
+        # soon, we'll update this system to just have one file with many
+        # frequencies and powers.
+        if self.calibration_files[0].find("Waveguide_A") > -1:
+            self.calib_A = pd.read_csv(_CALIBRATION_FOLDER_ + \
+                                    self.scan_range + "/" + \
+                                    self.calibration_files[0], sep = "\t")
+            self.calib_B = pd.read_csv(_CALIBRATION_FOLDER_ + \
+                                    self.scan_range + "/" + \
+                                    self.calibration_files[1], sep = "\t")
+        else:
+            self.calib_A = pd.read_csv(_CALIBRATION_FOLDER_ + \
+                                    self.scan_range + "/" + \
+                                    self.calibration_files[1], sep = "\t")
+            self.calib_B = pd.read_csv(_CALIBRATION_FOLDER_ + \
+                                    self.scan_range + "/" + \
+                                    self.calibration_files[0], sep = "\t")
+
+        self.calib_A = self.calib_A.set_index("Frequency [MHz]")
+        self.calib_B = self.calib_B.set_index("Frequency [MHz]")
 
         # Create a list of frequencies for this data set
         self.frequencies = np.linspace(round(float(self.f_min_max[0]),1), \
@@ -190,6 +183,15 @@ class Generator(object):
         # Turn on the generator and set the frequency to 910.0 MHz
         self.set_rf_frequency(21, 'N')
         print("RF Generator on and set to 910.0 MHz.")
+
+        if a_on:
+            self.generator.write("SOURCE A; RFLV:ON \n")
+        else:
+            self.generator.write("SOURCE A; RFLV:OFF \n")
+        if b_on:
+            self.generator.write("SOURCE B; RFLV:ON \n")
+        else:
+            self.generator.write("SOURCE B; RFLV:OFF \n")
 
         # Set up the Keithley logger to read the power detectors for the
         # waveguides
@@ -335,9 +337,12 @@ class Generator(object):
             else:
                 print("Generator channel specified is not valid.")
                 return
+            print("FREQUENCIES")
+            print(a_freq)
+            print(b_freq)
 
         # Change the power as well if not in calibration mode.
-        if not self.calib_mode or (change_power and self.calib_available):
+        if not self.calib_mode or change_power:
             a_power = str(round(self.calib_A.ix[round(a_freq,1)].values[0],1))
             b_power = str(round(self.calib_B.ix[round(b_freq,1)].values[0],1))
 
@@ -350,8 +355,6 @@ class Generator(object):
                                      " DBM; CFRQ:VALUE " + \
                                      str(round(b_freq,6)) + " MHz \n")
         else:
-            if change_power:
-                print("No calibration file available. Power not changed.")
             if self.a_on:
                 self.generator.write("SOURCE A; CFRQ:VALUE " + \
                                      str(round(a_freq,6)) + \

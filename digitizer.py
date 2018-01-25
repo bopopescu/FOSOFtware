@@ -233,7 +233,8 @@ class Digitizer:
 
         self.device.write("INITIATE")
 
-    def read(self, channel = None, read_type = 'INT', ret_bin = True):
+    def read(self, channel = None, read_type = 'INT', ret_bin = True,
+             ret_split = True):
         ''' Reads the waveform voltage from the digitizer. These will be
         returned as numpy arrays of 64-bit floats or 16-bit integers, or binary
         numbers (depending on the return_bin and read_type params). Note that
@@ -288,20 +289,24 @@ class Digitizer:
 
             t_s = time.time()
             # Separate channel data
-            #V1 = np.array([V[n*2*i:n*(2*i+1)] for i in range(int(len(V)/(2*n)))])
-            #V2 = np.array([V[n*(2*i+1):n*(2*i+2)] for i in range(int(len(V)/(2*n)))])
-            V = np.array(list(V)).reshape((self._num_samples,n*2))
-            V1 = V[:,:n].flatten()
-            V2 = V[:,n:2*n].flatten()
-            print("To split")
-            print(time.time()-t_s)
+            if ret_split:
+                V = np.array(list(V)).reshape((self._num_samples,n*2))
+                V1 = V[:,:n].flatten()
+                V2 = V[:,n:2*n].flatten()
+                print("To split")
+                print(time.time()-t_s)
 
             # Convert to non-binary
-            if not ret_bin:
+            if ret_split and not ret_bin:
                 V1 = np.frombuffer(V1, dtype = np.dtype(dt))
                 V2 = np.frombuffer(V2, dtype = np.dtype(dt))
+            elif not ret_bin:
+                V = np.frombuffer(V, dtype = np.dtype(dt))
 
-            return V1, V2, err
+            if ret_split:
+                return V1, V2, err
+            else:
+                return V, err
 
         elif channel == 1:
             self.device.write("FETCH:WAVeform:" + cmd + "? (@1)")
