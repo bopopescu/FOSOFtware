@@ -40,10 +40,8 @@ class UserInput(Toplevel):
         self.grid()
         self.createWidgets()
 
-        # This thread constantly searches for messages coming from the
-        # manager program.
-        self.t = th.Thread(target=self.run_loop)
-        self.t.start()
+        # No more threading with Tkinter. Just master loops.
+        self.master.after(500, self.check_queue)
 
         self.outfile_name = qol.path_file['Run Queue']+'userinput.txt'
         self.outfile_descriptor = 'w'
@@ -54,12 +52,6 @@ class UserInput(Toplevel):
             ofile.write(outtext)
             ofile.flush()
             self.outfile_descriptor = 'a'
-
-    def run_loop(self):
-        ''' A loop for to continually check the incoming queue.'''
-
-        while self.running:
-            self.check_queue()
 
     def check_queue(self):
         ''' Checks the queue shared with the Manager class.'''
@@ -75,7 +67,9 @@ class UserInput(Toplevel):
         else:
             if newtext != '':
                 self.check_kwds(newtext)
-            return
+
+        self.master.after(500, self.check_queue)
+        return
 
     def check_kwds(self, text):
         ''' A function to search user input for keywords relevant to this
@@ -85,7 +79,6 @@ class UserInput(Toplevel):
         if text == 'quit' or text == 'quit now':
             self.queue_out.put(text)
             self.running = False
-            self.t.join()
             self.quit()
         elif text == 'acq ended' or text == 'new acq':
             self.outfile_descriptor = 'w'
@@ -208,14 +201,7 @@ class OutputMonitor(Toplevel):
 
         # This thread constantly searches for messages coming from the
         # manager program.
-        self.t = th.Thread(target=self.run_loop)
-        self.t.start()
-
-    def run_loop(self):
-        ''' A loop for to continually check the incoming queue.'''
-
-        while self.running:
-            self.check_queue()
+        self.master.after(500, self.check_queue)
 
     def check_kwds(self, text):
         ''' Check text against a predetermined list of keywords.'''
@@ -242,7 +228,8 @@ class OutputMonitor(Toplevel):
             if newtext != '':
                 self.check_kwds(newtext)
                 self.update_label(newtext)
-            return
+        self.master.after(500, self.check_queue)
+        return
 
     def update_label(self, new_text):
         ''' A convenience method to update the label, making sure that no
@@ -298,9 +285,10 @@ class RunScheduler(Frame):
         self.grid()
         self.createwidgets()
 
-        # This thread constantly checks for input from the manager object.
-        self.t = th.Thread(target=self.check_queue)
-        self.t.start()
+        # No more threading with Tkinter. Can cause a program to crash when
+        # multiple threads try to update the window. Instead, have the master
+        # window work with a timer.
+        self.master.after(500, self.check_queue)
 
     def check_kwds(self, text):
         ''' Check text against a predetermined list of keywords.'''
@@ -332,16 +320,17 @@ class RunScheduler(Frame):
         ''' Safe method to check the queue for input from the manager.
         '''
 
-        while True:
-            newtext = None
+        newtext = None
 
-            try:
-                newtext = self.queue_in.get_nowait()
-            except Empty:
-                pass
-            else:
-                if newtext != '':
-                    self.check_kwds(newtext)
+        try:
+            newtext = self.queue_in.get_nowait()
+        except Empty:
+            pass
+        else:
+            if newtext != '':
+                self.check_kwds(newtext)
+
+        self.master.after(500, self.check_queue)
         return
 
     def new_rd_from_template(self):
@@ -1036,6 +1025,10 @@ class RunScheduler(Frame):
 
         self.runqueue_treeview.delete(sel)
         self.schedule_list = self.schedule_list.drop(ind)
+
+    def createVirtualEvents(self):
+        for e, h in self.VirtualEvents:
+            self.root.event_add()
 
     def createwidgets(self):
         ''' Set up the main window.'''
