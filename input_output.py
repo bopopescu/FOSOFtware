@@ -63,7 +63,7 @@ class UserInput(Toplevel):
         try:
             newtext = self.queue_in.get_nowait()
         except Empty:
-            return
+            pass
         else:
             if newtext != '':
                 self.check_kwds(newtext)
@@ -223,7 +223,7 @@ class OutputMonitor(Toplevel):
         try:
             newtext = self.queue_in.get_nowait()
         except Empty:
-            return
+            pass
         else:
             if newtext != '':
                 self.check_kwds(newtext)
