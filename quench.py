@@ -17,7 +17,8 @@ quench_info = pd.read_csv(_DEFAULT_FILE_LOCATION + "quench.csv") \
                 .set_index("Cavity")
 
 def isfreq(f):
-    ''' Check to see if the parameter f has the properties of a frequency that
+    '''
+    Check to see if the parameter f has the properties of a frequency that
     the USBSynth can produce. The value must be a float between the values of
     34.4 and 4400.0; these are units of MHz.
     '''
@@ -27,7 +28,8 @@ def isfreq(f):
     return False
 
 def ispower(p):
-    ''' Check to see if the parameter p has the properties of a power setting
+    '''
+    Check to see if the parameter p has the properties of a power setting
     for a USBSynth. Must be an integer; either 0 or 1.
     '''
 
@@ -36,7 +38,8 @@ def ispower(p):
     return False
 
 def isamp(a):
-    ''' Check to see if the parameter p has the properties of a power setting
+    '''
+    Check to see if the parameter p has the properties of a power setting
     for a USBSynth. Must be an integer from 0 to 3.
     '''
 
@@ -45,7 +48,8 @@ def isamp(a):
     return False
 
 def isattenv(v):
-    ''' Check to see if the parameter v has the properties of a DAC voltage
+    '''
+    Check to see if the parameter v has the properties of a DAC voltage
     that will be useful for the voltage attenuators. These attenuators respond
     to voltages between 0.0 and +8.0 V.
     '''
@@ -55,7 +59,8 @@ def isattenv(v):
     return False
 
 class QuenchError(Exception):
-    ''' A custom error class to deal with all exceptions from
+    '''
+    A custom error class to deal with all exceptions from
     opening and/or controlling quench cavities. Could contain LabJackExceptions,
     TypeErrors, ValueErrors, or other errors specific to this application.
     '''
@@ -67,7 +72,8 @@ class QuenchError(Exception):
         return self.errorString
 
 class Quench(object):
-    ''' This class allows for the use of a single quench cavity. It provides
+    '''
+    This class allows for the use of a single quench cavity. It provides
     easy access to all of the properties and functionality of a quench cavity
     while protecting the values that should not be changed (i.e. nominal pi
     pulse attenuator voltage).
@@ -103,7 +109,8 @@ class Quench(object):
 
     def __init__(self, com_port, cavity, freq, dio_pin, dac, dac_ain, ain_pin, \
                  **args):
-        ''' Initialize and open a quench cavity. args can be one of the
+        '''
+        Initialize and open a quench cavity. args can be one of the
         following items. The default values are marked with an asterisk.
 
         is_on = True, False*
@@ -241,7 +248,8 @@ class Quench(object):
         self.usb_device.write("o0")
 
     def get_usb_status(self):
-        '''Obtain current settings of the USB synth: frequency, amplitude, power
+        '''
+        Obtain current settings of the USB synth: frequency, amplitude, power
         and on/off status.
         '''
 
@@ -258,7 +266,8 @@ class Quench(object):
         return status_list
 
     def set_frequency(self,f):
-        ''' Set the frequency (in MHz) of the USB synthesizer. Can be from
+        '''
+        Set the frequency (in MHz) of the USB synthesizer. Can be from
         34.4 to 4400.0.
         '''
 
@@ -270,7 +279,7 @@ class Quench(object):
         time.sleep(_SLEEP_TIME)
 
     def set_usb_power(self,m):
-        ''' Set the power of the USB synthesizer. Can be 0 (low) or 1 (high).'''
+        '''Set the power of the USB synthesizer. Can be 0 (low) or 1 (high).'''
 
         if ispower(m):
             self.usb_device.write("h"+`m`)
@@ -279,7 +288,8 @@ class Quench(object):
         time.sleep(_SLEEP_TIME)
 
     def set_usb_amplitude(self,n):
-        ''' Set the electric field amplitude of the USB synthesizer. Can be any
+        '''
+        Set the electric field amplitude of the USB synthesizer. Can be any
         integer from 0 (lowest) to 3 (highest).
         '''
 
@@ -290,7 +300,8 @@ class Quench(object):
         time.sleep(_SLEEP_TIME)
 
     def close_usb(self):
-        ''' Close the USB synthesizer and, if not inherited, the LabJacks.
+        '''
+        Close the USB synthesizer and, if not inherited, the LabJacks.
         Note this does not turn off the synthesizer or change any of the LabJack
         settings.
         '''
@@ -303,7 +314,8 @@ class Quench(object):
         self.usb_device = serial.Serial(self.com_port,timeout=1)
 
     def toDouble(self, buffer):
-        ''' Name: toDouble(buffer)
+        '''
+        Name: toDouble(buffer)
         Args: buffer, an array with 8 bytes
         Desc: Converts the 8 byte array into a floating point number.
         '''
@@ -322,8 +334,7 @@ class Quench(object):
                  self.calib_constants['a_offset']
 
     def setLJTDAVoltage(self, **args):
-        ''' Sets the selected channel (DACA or DACB) to the specified voltage
-        '''
+        '''Sets the selected channel (DACA or DACB) to the specified voltage.'''
 
         # Address for the accessing the DAC on the LJTDAC
         # Information is available at
@@ -357,8 +368,7 @@ class Quench(object):
                                          SCLPinNum = sclPin)
 
     def getLJTDACcalibConstants(self):
-        ''' Get calibration constants from LJTDAC
-        '''
+        '''Get calibration constants from LJTDAC.'''
 
         # Address for the EEPROM on the LJTDAC to access its calibration
         # constants.
@@ -393,7 +403,8 @@ class Quench(object):
                 'b_offset': b_offset}
 
     def set_dac_voltage(self, dac_v):
-        ''' Changes the atten_v variable and sets the DAC voltage to the new
+        '''
+        Changes the atten_v variable and sets the DAC voltage to the new
         setting.
         '''
 
@@ -404,11 +415,11 @@ class Quench(object):
             self.setLJTDAVoltage()
 
     def get_dac_voltage(self):
-        ''' Read the voltage on the DAC.'''
+        '''Read the voltage on the DAC.'''
         return self.u6_handle.getAIN(self.dac_ain)
 
     def get_power_v(self):
-        ''' Read the voltage from the power detector.'''
+        '''Read the voltage from the power detector.'''
         return self.u3_handle.getAIN(self.ain_pin)
 
     def cavity_on(self):
@@ -444,7 +455,7 @@ class Quench(object):
         self.is_on = True
 
     def cavity_off(self):
-        ''' Turns off the USB synthesizer and sets the LJTDAC voltage to 0.0.'''
+        '''Turns off the USB synthesizer and sets the LJTDAC voltage to 0.0.'''
 
         # USB off
         self.usb_off()
@@ -455,7 +466,8 @@ class Quench(object):
         self.is_on = False
 
     def close(self):
-        ''' Closes all connections to the USB and, if not inherited, to the
+        '''
+        Closes all connections to the USB and, if not inherited, to the
         LabJacks. In addition to closing the LabJacks, this will use the
         LabJackPython.Close() function to allow another Python kernel to open
         these LabJacks.
@@ -487,7 +499,8 @@ class Quench(object):
                 sys.stderr.write(tb.format_exc())
 
 class QuenchManager(object):
-    ''' This class allows the user access to the quench cavities. With the
+    '''
+    This class allows the user access to the quench cavities. With the
     current setup, all cavities share two common LabJacks for input/output to
     the voltage attenuators and power detectors. This QuenchManager class will
     allow the user to seemlessly access the data for all cavities without
@@ -536,7 +549,8 @@ class QuenchManager(object):
     '''
 
     def __init__(self):
-        ''' Initializing the a QuenchManager involves reading the hardware data
+        '''
+        Initializing the a QuenchManager involves reading the hardware data
         for the quenches from quench.csv, and opening the relevant LabJacks.
         This will not work for more than one instance of a QuenchManager since
         LabJacks cannot be opened from more than one Python kernel at a time.
@@ -578,7 +592,8 @@ class QuenchManager(object):
                                                                  u6.U6))
 
     def open_quench(self, cavity, atten_v = None, is_on = None):
-        ''' Open access to one quench cavity. The default values are marked
+        '''
+        Open access to one quench cavity. The default values are marked
         with an asterisk.
 
         is_on = True, False*
@@ -595,7 +610,7 @@ class QuenchManager(object):
             com_port = "COM"+str(self.quench_info["COM Port"].ix[cavity])
 
             # Check arguments to see if options are special
-            if is_on:
+            if type(is_on) != type(None):
                 try:
                     # Fixing a mistake I made in creating the .quench files
                     # Status is passed as the is_on variable, and the values for
@@ -621,7 +636,7 @@ class QuenchManager(object):
 
             # If no option specified for attenuation voltage, set the cavity
             # to pi pulse
-            if atten_v:
+            if type(atten_v) != type(None):
                 try:
                     if isinstance(atten_v, float):
                         print("Attenuation voltage will be set to: " + \
@@ -666,7 +681,7 @@ class QuenchManager(object):
                               "the documentation for the list of cavity names.")
 
     def get_usb_status(self, cavity):
-        ''' Wrapper method for Quench object referred to by 'cavity'.'''
+        '''Wrapper method for Quench object referred to by 'cavity'.'''
 
         if cavity in self.quench_info.index:
             if self.quench_info['Is Open'].ix[cavity]:
@@ -677,7 +692,8 @@ class QuenchManager(object):
             print("Invalid cavity.")
 
     def print_usb_status(self, cavity):
-        ''' Print the formatted output of the get_usb_status method for the
+        '''
+        Print the formatted output of the get_usb_status method for the
         Quench object referred to by 'cavity'.
         '''
 
@@ -691,7 +707,7 @@ class QuenchManager(object):
             print("Invalid cavity.")
 
     def get_usb_id(self, cavity):
-        ''' Return the USBSynth model and serial number.'''
+        '''Return the USBSynth model and serial number.'''
 
         if cavity in self.quench_info.index:
             if self.quench_info['Is Open'].ix[cavity]:
@@ -713,7 +729,8 @@ class QuenchManager(object):
             print("Invalid cavity.")
 
     def set_frequency(self, cavity, freq):
-        ''' Set the frequency of the USBSynth output. The frequency must be
+        '''
+        Set the frequency of the USBSynth output. The frequency must be
         between 34.4 and 4400.0 (MHz).
         '''
 
@@ -732,7 +749,8 @@ class QuenchManager(object):
             print("Invalid cavity.")
 
     def set_usb_power(self, cavity, power_setting):
-        ''' Set the power of the USBSynth output. The power must be an
+        '''
+        Set the power of the USBSynth output. The power must be an
         integer; either 0 or 1.
         '''
 
@@ -920,7 +938,7 @@ class QuenchManager(object):
 
             attenv = None
             ison = None
-    
+
             for i in range(len(cavities)):
                 cav = cavities[i]
                 if atten_v:

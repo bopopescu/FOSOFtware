@@ -100,8 +100,8 @@ class QuenchCalibration(Acquisition):
         self.progress = 'Opening generator'
 
         self.gen = generator.Generator(calib = True)
-        self.gen.power_low('A')
-        self.gen.power_low('B')
+        #self.gen.power_low('A')
+        #self.gen.power_low('B')
 
         self.max_rep = int(self.run_dictionary.ix['Number of Repeats'].Value)
         self.max_avg = int(self.run_dictionary.ix['Number of Averages'].Value)
@@ -177,7 +177,7 @@ class QuenchCalibration(Acquisition):
 
             V = self.digi.ini_read(channel = self.digi_channel, \
                                    read_type = 'FLOAT', \
-                                   return_bin = False)
+                                   ret_bin = False)
             V = V[0]
 
             dc_on_avg = np.mean(V)
@@ -191,7 +191,7 @@ class QuenchCalibration(Acquisition):
 
             V = self.digi.ini_read(channel = self.digi_channel, \
                                    read_type = 'FLOAT', \
-                                   return_bin = False)
+                                   ret_bin = False)
             V = V[0]
 
             dc_off_avg = np.mean(V)
