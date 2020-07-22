@@ -183,8 +183,8 @@ class Digitizer:
 
     def sync(self, type):
         ''' Sync the digitizer to begin acquisition when a signal is received on
-        the external trigger. If the type is 'master', emit the signal when the
-        'INITIALIZE' command is received. If the type is 'slave', wait for the
+        the external trigger. If the type is 'main', emit the signal when the
+        'INITIALIZE' command is received. If the type is 'subordinate', wait for the
         trigger signal to begin an acquisition.
         '''
 
@@ -196,32 +196,32 @@ class Digitizer:
         # load.
         self.device.write("CONF:EXT:TRIG:OUTP NONE, POS_50")
 
-        if type == 'slave':
-            # Set the slave digitizer to wait for external trigger pulses to
+        if type == 'subordinate':
+            # Set the subordinate digitizer to wait for external trigger pulses to
             # which it can synchronize
             self.device.write("SYST:SYNC:EXT PEND")
             time.sleep(0.5)
             digi_synchronize_Q = self.device.ask("SYST:SYNC:EXT?")
-            print("Slave digitizer synchronization status: " + \
+            print("Subordinate digitizer synchronization status: " + \
                   str(digi_synchronize_Q))
 
-            # Configure the trigger options for the slave digitizer. It is set
+            # Configure the trigger options for the subordinate digitizer. It is set
             # to accept a positive trigger pulse and trigger to that pulse.
             self.device.write("CONF:ARM:SOUR IMM")
             self.device.write("CONF:TRIG:SOUR EXT")
             self.device.write("CONF:EXT:INP POS")
-        elif type == 'master':
-            # Set the master digitizer to output synchronizing trigger pulses to
+        elif type == 'main':
+            # Set the main digitizer to output synchronizing trigger pulses to
             # itself and other devices connected to its trigger port.
             self.device.write("SYST:SYNC:EXT SYNC")
             time.sleep(0.5)
 
             # Check if the digitizers are properly synchronized
             digi_synchronize_Q = self.device.ask("SYST:SYNC:EXT?")
-            print("Master digitizer synchronization status: " + \
+            print("Main digitizer synchronization status: " + \
                   str(digi_synchronize_Q))
 
-            # Configure the trigger options for the master digitizer. It is set
+            # Configure the trigger options for the main digitizer. It is set
             # to output a positive trigger pulse for a 50Ohm load
             self.device.write("CONF:ARM:SOUR IMM")
             self.device.write("CONF:TRIG:SOUR IMM")

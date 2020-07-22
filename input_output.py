@@ -29,8 +29,8 @@ _CODE_ = qol.path_file['Code']
 class UserInput(Toplevel):
     ''' A command line-type user input window.'''
 
-    def __init__(self, queue_out, queue_in, master=None):
-        Toplevel.__init__(self, master)
+    def __init__(self, queue_out, queue_in, main=None):
+        Toplevel.__init__(self, main)
         assert isinstance(queue_out, mp.queues.Queue)
         assert isinstance(queue_in, mp.queues.Queue)
         self.title("FOSOFtware: User Input")
@@ -40,8 +40,8 @@ class UserInput(Toplevel):
         self.grid()
         self.createWidgets()
 
-        # No more threading with Tkinter. Just master loops.
-        self.master.after(500, self.check_queue)
+        # No more threading with Tkinter. Just main loops.
+        self.main.after(500, self.check_queue)
 
         self.outfile_name = qol.path_file['Run Queue']+'userinput.txt'
         self.outfile_descriptor = 'w'
@@ -68,7 +68,7 @@ class UserInput(Toplevel):
             if newtext != '':
                 self.check_kwds(newtext)
 
-        self.master.after(500, self.check_queue)
+        self.main.after(500, self.check_queue)
         return
 
     def check_kwds(self, text):
@@ -189,8 +189,8 @@ class UserInput(Toplevel):
 class OutputMonitor(Toplevel):
     ''' Will display all output from every process.'''
 
-    def __init__(self, queue_out, queue_in, master=None):
-        Toplevel.__init__(self, master)
+    def __init__(self, queue_out, queue_in, main=None):
+        Toplevel.__init__(self, main)
         assert isinstance(queue_out, mp.queues.Queue)
         assert isinstance(queue_in, mp.queues.Queue)
         self.running = True
@@ -201,7 +201,7 @@ class OutputMonitor(Toplevel):
 
         # This thread constantly searches for messages coming from the
         # manager program.
-        self.master.after(500, self.check_queue)
+        self.main.after(500, self.check_queue)
 
     def check_kwds(self, text):
         ''' Check text against a predetermined list of keywords.'''
@@ -228,7 +228,7 @@ class OutputMonitor(Toplevel):
             if newtext != '':
                 self.check_kwds(newtext)
                 self.update_label(newtext)
-        self.master.after(500, self.check_queue)
+        self.main.after(500, self.check_queue)
         return
 
     def update_label(self, new_text):
@@ -274,9 +274,9 @@ class RunScheduler(Frame):
     files.
     '''
 
-    def __init__(self, queue_out, queue_in, master = None):
-        Frame.__init__(self, master)
-        self.master = master
+    def __init__(self, queue_out, queue_in, main = None):
+        Frame.__init__(self, main)
+        self.main = main
         assert isinstance(queue_out, mp.queues.Queue) # Send
         assert isinstance(queue_in, mp.queues.Queue) # Receive
         self.queue_out = queue_out
@@ -286,9 +286,9 @@ class RunScheduler(Frame):
         self.createwidgets()
 
         # No more threading with Tkinter. Can cause a program to crash when
-        # multiple threads try to update the window. Instead, have the master
+        # multiple threads try to update the window. Instead, have the main
         # window work with a timer.
-        self.master.after(500, self.check_queue)
+        self.main.after(500, self.check_queue)
 
     def check_kwds(self, text):
         ''' Check text against a predetermined list of keywords.'''
@@ -330,7 +330,7 @@ class RunScheduler(Frame):
             if newtext != '':
                 self.check_kwds(newtext)
 
-        self.master.after(500, self.check_queue)
+        self.main.after(500, self.check_queue)
         return
 
     def new_rd_from_template(self):
@@ -1033,7 +1033,7 @@ class RunScheduler(Frame):
     def createwidgets(self):
         ''' Set up the main window.'''
 
-        self.menubar = Menu(self.master)
+        self.menubar = Menu(self.main)
 
         # File menu creation
         self.filemenu = Menu(self,tearoff=0)
@@ -1046,7 +1046,7 @@ class RunScheduler(Frame):
 
         # Adding things to the menu bar at the top of the window.
         self.menubar.add_cascade(label='File',menu=self.filemenu)
-        self.master.config(menu=self.menubar)
+        self.main.config(menu=self.menubar)
 
         # Setting up the run dictionary table. See documentation on ttk.Treeview
         # for more info.
@@ -1206,10 +1206,10 @@ def run_iotk(termin_queueout, termin_queuein, termout_queueout, \
     style = ttk.Style()
     root.geometry('1200x750')
 
-    run_scheduler = RunScheduler(rs_queueout, rs_queuein, master=root)
-    inp = UserInput(termin_queueout, termin_queuein, master=root)
-    otp = OutputMonitor(termout_queueout, termout_queuein, master=root)
-    err = OutputMonitor(termerr_queueout, termerr_queuein, master=root)
+    run_scheduler = RunScheduler(rs_queueout, rs_queuein, main=root)
+    inp = UserInput(termin_queueout, termin_queuein, main=root)
+    otp = OutputMonitor(termout_queueout, termout_queuein, main=root)
+    err = OutputMonitor(termerr_queueout, termerr_queuein, main=root)
 
     root.title("FOSOFtware: Run Dictionary Manager")
     inp.title("FOSOFtware: User Input")

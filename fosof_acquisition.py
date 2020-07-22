@@ -132,8 +132,8 @@ class FOSOFAcquisition(Acquisition):
         self.digi_c2 = self.digi_det
 
         # Sync the digitizers (to a signal from digi1 when digi1 is initialized)
-        self.digi1.sync('master')
-        self.digi2.sync('slave')
+        self.digi1.sync('main')
+        self.digi2.sync('subordinate')
 
         self.progress = 'Opening generator'
 
@@ -686,8 +686,8 @@ class FOSOFAcquisition(Acquisition):
                                          sampling_rate = self.sampling_rate, \
                                          num_samples = self.num_samples)
 
-        self.digi1.sync('master')
-        self.digi2.sync('slave')
+        self.digi1.sync('main')
+        self.digi2.sync('subordinate')
 
         # Configure digitizers & quenches for last pre-quench 910 state
         if self.pre910_state == 'on':
